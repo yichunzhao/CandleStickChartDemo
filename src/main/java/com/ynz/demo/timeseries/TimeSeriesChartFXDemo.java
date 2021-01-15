@@ -27,10 +27,13 @@ public class TimeSeriesChartFXDemo extends ApplicationFrame {
 
     public TimeSeriesChartFXDemo(String title) {
         super(title);
-        JFreeChart chart = createChart("demo candle chart");
+        //JFreeChart chart = createChart("demo candle chart");
+
+        JFreeChart chart = createPriceVolumeCombinedChart("combined price and volume");
 
         //create new chart panel
         ChartPanel chartPanel = new ChartPanel(chart);
+
         chartPanel.setPreferredSize(new Dimension(1200, 500));
 
         //enable zooming
@@ -41,7 +44,7 @@ public class TimeSeriesChartFXDemo extends ApplicationFrame {
         add(chartPanel, BorderLayout.CENTER);
     }
 
-    private CombinedDomainXYPlot createPriceVolumeCombinedChart() {
+    private JFreeChart createPriceVolumeCombinedChart(String title) {
 
         //price subplot
         OHLCSeriesCollection priceDataCollection = new OHLCSeriesCollection();
@@ -67,7 +70,9 @@ public class TimeSeriesChartFXDemo extends ApplicationFrame {
         priceVolumePlot.add(volumePlot, 1);
         priceVolumePlot.setOrientation(PlotOrientation.VERTICAL);
 
-        return priceVolumePlot;
+        JFreeChart priceVolumeChart = new JFreeChart(title, priceVolumePlot);
+
+        return priceVolumeChart;
     }
 
     private JFreeChart createChart(String title) {
@@ -105,11 +110,6 @@ public class TimeSeriesChartFXDemo extends ApplicationFrame {
         timeSeriesChartFXDemo.setVisible(true);
     }
 
-    /**
-     * Creates a sample high low dataset.
-     *
-     * @return a sample high low dataset.
-     */
     public Map<String, Series> createPriceVolumeDataSet() {
 
         Map<String, Series> resultMap = new HashMap<>();
