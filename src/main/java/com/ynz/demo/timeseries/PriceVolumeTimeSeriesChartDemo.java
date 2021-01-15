@@ -1,6 +1,5 @@
 package com.ynz.demo.timeseries;
 
-import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
@@ -23,89 +22,53 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.IntStream;
 
-public class TimeSeriesChartFXDemo extends ApplicationFrame {
+public class PriceVolumeTimeSeriesChartDemo extends ApplicationFrame {
 
-    public TimeSeriesChartFXDemo(String title) {
+    public PriceVolumeTimeSeriesChartDemo(String title) {
         super(title);
-        //JFreeChart chart = createChart("demo candle chart");
 
         JFreeChart chart = createPriceVolumeCombinedChart("combined price and volume");
 
         //create new chart panel
         ChartPanel chartPanel = new ChartPanel(chart);
-
         chartPanel.setPreferredSize(new Dimension(1200, 500));
 
         //enable zooming
         chartPanel.setMouseWheelEnabled(true);
         chartPanel.setMouseZoomable(true);
 
-        //setContentPane(chartPanel);
         add(chartPanel, BorderLayout.CENTER);
     }
 
     private JFreeChart createPriceVolumeCombinedChart(String title) {
-
         //price subplot
-        OHLCSeriesCollection priceDataCollection = new OHLCSeriesCollection();
-        priceDataCollection.addSeries((OHLCSeries) createPriceVolumeDataSet().get("priceDateData"));
+        OHLCSeriesCollection priceDateCollection = new OHLCSeriesCollection();
+        priceDateCollection.addSeries((OHLCSeries) createPriceVolumeDataSet().get("priceDateData"));
 
         CandlestickRenderer candlestickRenderer = new CandlestickRenderer();
         NumberAxis priceAxis = new NumberAxis("price");
-        XYPlot pricePlot = new XYPlot(priceDataCollection, null, priceAxis, candlestickRenderer);
+        XYPlot pricePlot = new XYPlot(priceDateCollection, null, priceAxis, candlestickRenderer);
 
         //volume subplot
-        TimeSeries volumeDateSet = (TimeSeries) createPriceVolumeDataSet().get("volumeDateData");
         TimeSeriesCollection volumeDateCollection = new TimeSeriesCollection();
-        volumeDateCollection.addSeries(volumeDateSet);
+        volumeDateCollection.addSeries((TimeSeries) createPriceVolumeDataSet().get("volumeDateData"));
 
-        NumberAxis volumeAxis = new NumberAxis("volume");
         XYBarRenderer barRenderer = new XYBarRenderer();
+        NumberAxis volumeAxis = new NumberAxis("volume");
         XYPlot volumePlot = new XYPlot(volumeDateCollection, null, volumeAxis, barRenderer);
 
         //combine price and volume into a single plot
         DateAxis dateAxis = new DateAxis("Trade Day");
-        CombinedDomainXYPlot priceVolumePlot = new CombinedDomainXYPlot(dateAxis);
-        priceVolumePlot.add(pricePlot, 3);
-        priceVolumePlot.add(volumePlot, 1);
-        priceVolumePlot.setOrientation(PlotOrientation.VERTICAL);
+        CombinedDomainXYPlot combinedPlot = new CombinedDomainXYPlot(dateAxis);
+        combinedPlot.add(pricePlot, 3);
+        combinedPlot.add(volumePlot, 1);
+        combinedPlot.setOrientation(PlotOrientation.VERTICAL);
 
-        JFreeChart priceVolumeChart = new JFreeChart(title, priceVolumePlot);
-
-        return priceVolumeChart;
-    }
-
-    private JFreeChart createChart(String title) {
-        //a collection of data series
-        OHLCSeriesCollection candleStickDataSet = new OHLCSeriesCollection();
-
-        //create candlestick chart price data series
-        candleStickDataSet.addSeries((OHLCSeries) createPriceVolumeDataSet().get("priceDateData"));
-
-        JFreeChart chart = ChartFactory.createCandlestickChart(
-                "stock price-time chart",
-                "Trade day",
-                "Price",
-                candleStickDataSet,
-                true
-        );
-
-        XYPlot candlePlot = chart.getXYPlot();
-        candlePlot.setBackgroundPaint(Color.WHITE);
-
-        //second axis shows volume
-        NumberAxis volumeAxis = new NumberAxis("Volume");
-        volumeAxis.setAutoRangeIncludesZero(false);
-        candlePlot.setRangeAxis(1, volumeAxis);
-
-        CandlestickRenderer renderer = (CandlestickRenderer) candlePlot.getRenderer();
-        renderer.setVolumePaint(Color.BLACK);
-
-        return chart;
+        return new JFreeChart(title, combinedPlot);
     }
 
     public static void main(String[] args) {
-        TimeSeriesChartFXDemo timeSeriesChartFXDemo = new TimeSeriesChartFXDemo("demo a candle chart");
+        PriceVolumeTimeSeriesChartDemo timeSeriesChartFXDemo = new PriceVolumeTimeSeriesChartDemo("demo a candle chart");
         timeSeriesChartFXDemo.pack();
         timeSeriesChartFXDemo.setVisible(true);
     }
@@ -119,7 +82,6 @@ public class TimeSeriesChartFXDemo extends ApplicationFrame {
 
         //volume bar data series, including day and volume
         TimeSeries volumeDateSeries = new TimeSeries("volume");
-
 
         final Day[] days = new Day[47];
         final double[] high = new double[47];
@@ -470,6 +432,5 @@ public class TimeSeriesChartFXDemo extends ApplicationFrame {
 
         return resultMap;
     }
-
 
 }
