@@ -29,11 +29,11 @@ public class PriceVolumeTimeSeriesChartDemo extends ApplicationFrame {
 
         JFreeChart chart = createPriceVolumeCombinedChart("combined price and volume");
 
-        //create new chart panel
+        //create a chart panel to hold the chart; ChartPanel is a JPanel
         ChartPanel chartPanel = new ChartPanel(chart);
         chartPanel.setPreferredSize(new Dimension(1200, 500));
 
-        //enable zooming
+        //enable zooming via chartPanel
         chartPanel.setMouseWheelEnabled(true);
         chartPanel.setMouseZoomable(true);
 
@@ -78,7 +78,7 @@ public class PriceVolumeTimeSeriesChartDemo extends ApplicationFrame {
         Map<String, Series> resultMap = new HashMap<>();
 
         //price candleStick data series, including day, high, low, open, close, volume
-        OHLCSeries ohlcSeries = new OHLCSeries("Price");
+        OHLCSeries priceDateSeries = new OHLCSeries("Price");
 
         //volume bar data series, including day and volume
         TimeSeries volumeDateSeries = new TimeSeries("volume");
@@ -423,11 +423,11 @@ public class PriceVolumeTimeSeriesChartDemo extends ApplicationFrame {
         volume[46] = 100.0;
 
         IntStream.range(0, days.length).forEach(i -> {
-            ohlcSeries.add(days[i], open[i], high[i], low[i], close[i]);
+            priceDateSeries.add(days[i], open[i], high[i], low[i], close[i]);
             volumeDateSeries.add(days[i], volume[i]);
         });
 
-        resultMap.put("priceDateData", ohlcSeries);
+        resultMap.put("priceDateData", priceDateSeries);
         resultMap.put("volumeDateData", volumeDateSeries);
 
         return resultMap;
