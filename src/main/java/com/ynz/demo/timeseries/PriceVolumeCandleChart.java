@@ -22,9 +22,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.IntStream;
 
-public class PriceVolumeTimeSeriesChartDemo extends ApplicationFrame {
+public class PriceVolumeCandleChart extends ApplicationFrame {
 
-    public PriceVolumeTimeSeriesChartDemo(String title) {
+    private Map<String, Series> fakedPriceVolumeDataSet;
+
+    {
+        fakedPriceVolumeDataSet = createPriceVolumeDataSet();
+    }
+
+    public PriceVolumeCandleChart(String title) {
         super(title);
 
         JFreeChart chart = createPriceVolumeCombinedChart("combined price and volume");
@@ -40,10 +46,10 @@ public class PriceVolumeTimeSeriesChartDemo extends ApplicationFrame {
         add(chartPanel, BorderLayout.CENTER);
     }
 
-    private JFreeChart createPriceVolumeCombinedChart(String title) {
+    public JFreeChart createPriceVolumeCombinedChart(String title) {
         //price subplot
         OHLCSeriesCollection priceDateCollection = new OHLCSeriesCollection();
-        priceDateCollection.addSeries((OHLCSeries) createPriceVolumeDataSet().get("priceDateData"));
+        priceDateCollection.addSeries((OHLCSeries) fakedPriceVolumeDataSet.get("priceDateData"));
 
         CandlestickRenderer candlestickRenderer = new CandlestickRenderer();
         NumberAxis priceAxis = new NumberAxis("price");
@@ -51,7 +57,7 @@ public class PriceVolumeTimeSeriesChartDemo extends ApplicationFrame {
 
         //volume subplot
         TimeSeriesCollection volumeDateCollection = new TimeSeriesCollection();
-        volumeDateCollection.addSeries((TimeSeries) createPriceVolumeDataSet().get("volumeDateData"));
+        volumeDateCollection.addSeries((TimeSeries) fakedPriceVolumeDataSet.get("volumeDateData"));
 
         XYBarRenderer barRenderer = new XYBarRenderer();
         NumberAxis volumeAxis = new NumberAxis("volume");
@@ -65,12 +71,6 @@ public class PriceVolumeTimeSeriesChartDemo extends ApplicationFrame {
         combinedPlot.setOrientation(PlotOrientation.VERTICAL);
 
         return new JFreeChart(title, combinedPlot);
-    }
-
-    public static void main(String[] args) {
-        PriceVolumeTimeSeriesChartDemo timeSeriesChartFXDemo = new PriceVolumeTimeSeriesChartDemo("demo a candle chart");
-        timeSeriesChartFXDemo.pack();
-        timeSeriesChartFXDemo.setVisible(true);
     }
 
     public Map<String, Series> createPriceVolumeDataSet() {
